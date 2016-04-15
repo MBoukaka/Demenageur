@@ -1,0 +1,6 @@
+O ... joueur
+# ... mur
+* ... bloc
+X ... objectif
+A ... joueur + objectif
+R ... bloc + objectif
