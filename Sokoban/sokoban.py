@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+''' Créer par Lucas Nadal et Yann Floris pour un projet de fin d'année en ISN, année 2016 '''
 
 import tkinter as tk
 from tkinter.filedialog import askopenfilenames
@@ -51,7 +51,7 @@ class CompleteDialog(tk.Frame): #Fenêtre niveau gagné
         self = tk.Toplevel()
         self.title("Félicitations !")
 
-        info = tk.Label(self, text=("Vous avez fini ce niveau !", height=15, width=150))
+        info = tk.Label(self, text=("Vous avez fini ce niveau !"))
         info.grid(row=0)
 
         self.ok_button = tk.Button(self, text="OK", command=self.destroy)
@@ -77,7 +77,7 @@ class Image(object): #Associations objets/images
 
 
 class Application(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None): #Définition de l'état du programme, de la grille et des chaînes par défaut
         tk.Frame.__init__(self, master)
         self.grid()
         self.master.title("Sokoban sous Python 3.5")
@@ -101,8 +101,8 @@ class Application(tk.Frame):
         self.objectifs = {}
         
     def key(self, event):
-        directions = {Direction.left, Direction.right, Direction.up, Direction.down}
-        if event.keysym in directions:
+        directions = {Direction.left, Direction.right, Direction.up, Direction.down} #Rassembler les touches dans une chaîne
+        if event.keysym in directions: #Si la touche enclenchée par l'utilisateur appartient à la chaîne, alors bouger le joueur
             self.move_joueur(event.keysym)
 
     def creer_menu(self): #Création menu fenêtre accueil
@@ -122,14 +122,11 @@ class Application(tk.Frame):
 
     def default_frame(self): #Création fenêtre d'Accueil
         start_width = 30
-        start_label = tk.Label(self.frame, text="Bienvenue !\n", font='Helvetica', height=10, width=130)
+        start_label = tk.Label(self.frame, text="Bienvenue !\n", width=start_width)
         start_label.grid(row=0, column=0)
 
-        start_label2 = tk.Label(self.frame, text="Pour jouer, choissisez un\nniveau dans Fichier -> Ouvrir...\n", font='Helvetica', height=10, width=100)
+        start_label2 = tk.Label(self.frame, text="Pour jouer, choissisez un\nniveau dans Fichier -> Ouvrir...\n", width=start_width)
         start_label2.grid(row=1, column=0)
-        
-        start_label3 = tk.Label(self.frame, text="PROJET ISN 2016 - YANN FLORIS ET LUCAS NADAL\n",font='Helvetica', height=5, width=100)
-        start_label3.grid(row=3, column=0)
 
     def clear_niveau(self): #Fermer fenêtre de jeu
         self.frame.destroy()
@@ -159,48 +156,48 @@ class Application(tk.Frame):
     def load_niveau(self, niveau): #Génération du niveau basé sur le texte
         self.clear_niveau()
 
-        for row, line in enumerate(niveau):
+        for row, line in enumerate(niveau): #Pour chaque ligne du fichier choisi
             niveau_row = list(line)
-            for column,x in enumerate(niveau_row):
-                if x == Niveau.joueur:
+            for column,x in enumerate(niveau_row): #Pour chaque caractère de chaque ligne
+                if x == Niveau.joueur: #Si caractère est joueur, considérer sur le sol
                     niveau_row[column] = Niveau.sol
 
-                elif x == Niveau.objectif:
+                elif x == Niveau.objectif: #Si caractère est objectif, considérer objectif vide
                     self.objectifs[(row, column)] = Objectif.vide
 
-                elif x == Niveau.caisse_sur_objectif:
+                elif x == Niveau.caisse_sur_objectif: #Si caractère caisse sur objectif, considérer objectif rempli
                     self.objectifs[(row, column)] = Objectif.plein
 
-            self.niveau.append(niveau_row)
+            self.niveau.append(niveau_row) #Ajouter l'élément à la liste self.niveau
 
-            for column, char in enumerate(line):
-                if char == Niveau.mur:
+            for column, car in enumerate(line): #Pour chaque caractère du fichier choisi
+                if car == Niveau.mur: #Si caractère est mur, créer mur dans la grille
                     mur = tk.PhotoImage(file=Image.mur)
                     w = tk.Label(self.frame, image=mur)
                     w.mur = mur
                     w.grid(row=row, column=column)
 
-                elif char == Niveau.objectif:
+                elif car == Niveau.objectif: #Si caractère est objectif, créer objectif dans la grille
                     objectif = tk.PhotoImage(file=Image.objectif)
                     w = tk.Label(self.frame, image=objectif)
                     w.objectif = objectif
                     w.grid(row=row, column=column)
 
-                elif char == Niveau.caisse_sur_objectif:
+                elif car == Niveau.caisse_sur_objectif:
                     caisse_sur_objectif = tk.PhotoImage(file=Image.caisse_sur_objectif)
                     w = tk.Label(self.frame, image=caisse_sur_objectif)
                     w.caisse_sur_objectif = caisse_sur_objectif
                     w.grid(row=row, column=column)
                     self.caisses[(row, column)] = w
 
-                elif char == Niveau.caisse:
+                elif car == Niveau.caisse:
                     caisse = tk.PhotoImage(file=Image.caisse)
                     w = tk.Label(self.frame, image=caisse)
                     w.caisse = caisse
                     w.grid(row=row, column=column)
                     self.caisses[(row, column)] = w
 
-                elif char == Niveau.joueur:
+                elif car == Niveau.joueur:
                     joueur_image = tk.PhotoImage(file=Image.joueur)
                     self.joueur = tk.Label(self.frame, image=joueur_image)
                     self.joueur.joueur_image = joueur_image
