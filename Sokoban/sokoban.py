@@ -51,7 +51,7 @@ class CompleteDialog(tk.Frame): #Fenêtre niveau gagné
         self = tk.Toplevel()
         self.title("Félicitations !")
 
-        info = tk.Label(self, text=("Vous avez fini ce niveau !"))
+        info = tk.Label(self, text=("Vous avez fini ce niveau !", height=15, width=150))
         info.grid(row=0)
 
         self.ok_button = tk.Button(self, text="OK", command=self.destroy)
@@ -122,11 +122,14 @@ class Application(tk.Frame):
 
     def default_frame(self): #Création fenêtre d'Accueil
         start_width = 30
-        start_label = tk.Label(self.frame, text="Bienvenue !\n", width=start_width)
+        start_label = tk.Label(self.frame, text="Bienvenue !\n", font='Helvetica', height=10, width=130)
         start_label.grid(row=0, column=0)
 
-        start_label2 = tk.Label(self.frame, text="Pour jouer, choissisez un\nniveau dans Fichier -> Ouvrir...\n", width=start_width)
+        start_label2 = tk.Label(self.frame, text="Pour jouer, choissisez un\nniveau dans Fichier -> Ouvrir...\n", font='Helvetica', height=10, width=100)
         start_label2.grid(row=1, column=0)
+        
+        start_label3 = tk.Label(self.frame, text="PROJET ISN 2016 - YANN FLORIS ET LUCAS NADAL\n",font='Helvetica', height=5, width=100)
+        start_label3.grid(row=3, column=0)
 
     def clear_niveau(self): #Fermer fenêtre de jeu
         self.frame.destroy()
