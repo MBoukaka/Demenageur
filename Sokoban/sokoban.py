@@ -6,36 +6,33 @@ import pydoc
 import os
 
 
-_ROOT = os.path.abspath(os.path.dirname(__file__))
-
-
 def enum(**enums):
     return type('Enum', (), enums)
 Objectif = enum(plein=True, vide=False)
 
 
-class Menu(object):
-    def __init__(self, app):
+class Menu(object): #Création objets menu
+    def __init__(self, app): #Initialisation du menu
         self.app = app
 
-    def Ouvrirlvl(self):
-        self.app.grid_forget()
-        niveau_files = self.app.tk.splitlist(askopenfilenames(initialdir=os.path.join(_ROOT, 'niveaux')))
+    def Ouvrirlvl(self): #Bouton ouvrir...
+        app.grid_forget()
+        niveau_files = askopenfilenames(initialdir = "niveaux")
         self.app.niveau_files = list(niveau_files)
         self.app.start_next_niveau()
 
-    def About(self):
+    def About(self): #Bouton A Propos
         AboutDialog()
 
 
-class Direction(object):
+class Direction(object): #Directions pour touches clavier
     left = 'Left'
     right = 'Right'
     up = 'Up'
     down = 'Down'
 
 
-class AboutDialog(tk.Frame):
+class AboutDialog(tk.Frame): #Fenêtre bouton A Propos
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self = tk.Toplevel()
@@ -48,7 +45,7 @@ class AboutDialog(tk.Frame):
         self.ok_button.grid(row=1)
 
 
-class CompleteDialog(tk.Frame):
+class CompleteDialog(tk.Frame): #Fenêtre niveau gagné
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self = tk.Toplevel()
@@ -61,7 +58,7 @@ class CompleteDialog(tk.Frame):
         self.ok_button.grid(row=1)
 
 
-class Niveau(object):
+class Niveau(object): #Lecture fichiers niveau, association objets/caractères
     mur = '*'
     objectif = 'o'
     caisse_sur_objectif = '@'
@@ -70,20 +67,19 @@ class Niveau(object):
     sol = ' '
 
 
-class Image(object):
-    mur = os.path.join(_ROOT, 'images/mur.gif')
-    objectif = os.path.join(_ROOT, 'images/objectif.gif')
-    caisse_sur_objectif = os.path.join(_ROOT, 'images/caisse-sur-objectif.gif')
-    caisse = os.path.join(_ROOT, 'images/caisse.gif')
-    joueur = os.path.join(_ROOT, 'images/joueur.gif')
-    joueur_sur_objectif = os.path.join(_ROOT, 'images/joueur-sur-objectif.gif')
+class Image(object): #Associations objets/images
+    mur = os.path.join('images/mur.gif')
+    objectif = os.path.join('images/objectif.gif')
+    caisse_sur_objectif = os.path.join('images/caisse-sur-objectif.gif')
+    caisse = os.path.join('images/caisse.gif')
+    joueur = os.path.join('images/joueur.gif')
+    joueur_sur_objectif = os.path.join('images/joueur-sur-objectif.gif')
 
 
 class Application(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
         self.grid()
-        self.configure(background="black")
         self.master.title("Sokoban sous Python 3.5")
         self.master.resizable(0,0)
         icon = tk.PhotoImage(file=Image.caisse)
@@ -109,11 +105,10 @@ class Application(tk.Frame):
         if event.keysym in directions:
             self.move_joueur(event.keysym)
 
-    def creer_menu(self):
-        root = self.master
-        menu = tk.Menu(root)
+    def creer_menu(self): #Création menu fenêtre accueil
+        menu = tk.Menu(self.master)
         user_menu = Menu(self)
-        root.config(menu=menu)
+        self.master.config(menu=menu)
 
         file_menu = tk.Menu(menu)
         menu.add_cascade(label="Fichier", menu=file_menu)
@@ -125,7 +120,7 @@ class Application(tk.Frame):
         menu.add_cascade(label="Aide", menu=help_menu)
         help_menu.add_command(label="A Propos", command=user_menu.About)
 
-    def default_frame(self):
+    def default_frame(self): #Création fenêtre d'Accueil
         start_width = 30
         start_label = tk.Label(self.frame, text="Bienvenue !\n", width=start_width)
         start_label.grid(row=0, column=0)
@@ -133,13 +128,13 @@ class Application(tk.Frame):
         start_label2 = tk.Label(self.frame, text="Pour jouer, choissisez un\nniveau dans Fichier -> Ouvrir...\n", width=start_width)
         start_label2.grid(row=1, column=0)
 
-    def clear_niveau(self):
+    def clear_niveau(self): #Fermer fenêtre de jeu
         self.frame.destroy()
         self.frame = tk.Frame(self)
         self.frame.grid()
         self.niveau = []
 
-    def start_next_niveau(self):
+    def start_next_niveau(self): #Passage niveau suivant (mauvais fonctionnement, arret du niveau)
         self.clear_niveau()
         if len(self.niveau_files) > 0:
             self.current_niveau = self.niveau_files.pop()
@@ -153,12 +148,12 @@ class Application(tk.Frame):
             self.default_frame()
             CompleteDialog()
 
-    def restart_niveau(self):
+    def restart_niveau(self): #Fonction redémarrer du menu
         if self.current_niveau:
             self.niveau_files.append(self.current_niveau)
             self.start_next_niveau()
 
-    def load_niveau(self, niveau):
+    def load_niveau(self, niveau): #Génération du niveau basé sur le texte
         self.clear_niveau()
 
         for row, line in enumerate(niveau):
@@ -209,19 +204,19 @@ class Application(tk.Frame):
                     self.joueur.grid(row=row, column=column)
                     self.joueur_position = (row, column)
 
-    def move_joueur(self, direction):
+    def move_joueur(self, direction): #Délpacement joueur
         row, column = self.joueur_position
         prev_row, prev_column = row, column
 
         blocked = True
-        if direction == Direction.left and self.niveau[row][column - 1] is not Niveau.mur and column > 0:
-            blocked = self.move_caisse((row, column - 1), (row, column - 2))
-            if not blocked:
+        if direction == Direction.left and self.niveau[row][column - 1] is not Niveau.mur and column > 0: #Si joueur va à gauche et block suivant n'est pas mur
+            blocked = self.move_caisse((row, column - 1), (row, column - 2)) #Vérifier si caisse poussée est bloquée
+            if not blocked: #Si non bloquée déplacer à gauche
                 self.joueur_position = (row, column - 1)
 
-        elif direction == Direction.right and self.niveau[row][column + 1] is not Niveau.mur:
-            blocked = self.move_caisse((row, column + 1), (row, column + 2))
-            if not blocked:
+        elif direction == Direction.right and self.niveau[row][column + 1] is not Niveau.mur: #Si joueur va à droite et block suivant n'est pas mur
+            blocked = self.move_caisse((row, column + 1), (row, column + 2)) #Vérifier si caisse poussée est bloquée
+            if not blocked: #Si non bloquée déplacer à droite
                 self.joueur_position = (row, column + 1)
 
         elif direction == Direction.down and self.niveau[row + 1][column] is not Niveau.mur:
@@ -234,39 +229,34 @@ class Application(tk.Frame):
             if not blocked:
                 self.joueur_position = (row - 1, column)
 
-        all_objectifs_plein = True
-        for objectif in self.objectifs.values():
-            if objectif is not Objectif.plein:
-                all_objectifs_plein = False
+        all_objectifs_plein = True #Tous objectifs remplis
+        for objectif in self.objectifs.values(): #Pour chaque objectif
+            if objectif is not Objectif.plein: #Si au moins 1 objectif pas plein
+                all_objectifs_plein = False #Alors tous objectifs pas pleins
 
-        if all_objectifs_plein:
-            self.start_next_niveau()
+        if all_objectifs_plein: #Si tous objectifs remplis
+            self.start_next_niveau() #Mettre fin au niveau
             return
 
         row, column = self.joueur_position
-        if self.niveau[prev_row][prev_column] is Niveau.objectif and not blocked:
-            objectif = tk.PhotoImage(file=Image.objectif)
-            w = tk.Label(self.frame, image=objectif)
-            w.objectif = objectif
-            w.grid(row=prev_row, column=prev_column)
 
         if not blocked:
-            self.joueur.grid_forget()
+            self.joueur.grid_forget() #Effacer de la mémoire la position précédente du joueur
 
-            if self.niveau[row][column] is Niveau.objectif:
-                joueur_image = tk.PhotoImage(file=Image.joueur_sur_objectif)
+            if self.niveau[row][column] is Niveau.objectif: #Si joueur est sur case objectif
+                joueur_image = tk.PhotoImage(file=Image.joueur_sur_objectif) #Afficher image joueur sur objectif
             else:
-                joueur_image = tk.PhotoImage(file=Image.joueur)
+                joueur_image = tk.PhotoImage(file=Image.joueur) #Sinon afficher image joueur
 
             self.joueur = tk.Label(self.frame, image=joueur_image)
             self.joueur.joueur_image = joueur_image
             self.joueur.grid(row=row, column=column)
 
-    def move_caisse(self, location, next_location):
+    def move_caisse(self, location, next_location): #Pousser les caisses
         row, column = location
         next_row, next_column = next_location
 
-        if self.niveau[row][column] is Niveau.caisse and self.niveau[next_row][next_column] is Niveau.sol:
+        if self.niveau[row][column] is Niveau.caisse and self.niveau[next_row][next_column] is Niveau.sol: #Si block suivant caisse est vide
             self.caisses[(row, column)].grid_forget()
             caisse = tk.PhotoImage(file=Image.caisse)
             w = tk.Label(self.frame, image=caisse)
@@ -277,7 +267,7 @@ class Application(tk.Frame):
             self.niveau[row][column] = Niveau.sol
             self.niveau[next_row][next_column] = Niveau.caisse
 
-        elif self.niveau[row][column] is Niveau.caisse and self.niveau[next_row][next_column] is Niveau.objectif:
+        elif self.niveau[row][column] is Niveau.caisse and self.niveau[next_row][next_column] is Niveau.objectif: #Si block suivant caisse est objectif
             self.caisses[(row, column)].grid_forget()
             caisse_sur_objectif = tk.PhotoImage(file=Image.caisse_sur_objectif)
             w = tk.Label(self.frame, image=caisse_sur_objectif)
@@ -289,7 +279,7 @@ class Application(tk.Frame):
             self.niveau[next_row][next_column] = Niveau.caisse_sur_objectif
             self.objectifs[(next_row, next_column)] = Objectif.plein
 
-        elif self.niveau[row][column] is Niveau.caisse_sur_objectif and self.niveau[next_row][next_column] is Niveau.sol:
+        elif self.niveau[row][column] is Niveau.caisse_sur_objectif and self.niveau[next_row][next_column] is Niveau.sol: #Si block suivant caisse sur objectif est vide
             self.caisses[(row, column)].grid_forget()
             caisse = tk.PhotoImage(file=Image.caisse)
             w = tk.Label(self.frame, image=caisse)
@@ -301,7 +291,7 @@ class Application(tk.Frame):
             self.niveau[next_row][next_column] = Niveau.caisse
             self.objectifs[(row, column)] = Objectif.vide
 
-        elif self.niveau[row][column] is Niveau.caisse_sur_objectif and self.niveau[next_row][next_column] is Niveau.objectif:
+        elif self.niveau[row][column] is Niveau.caisse_sur_objectif and self.niveau[next_row][next_column] is Niveau.objectif: #Si block suivant caisse sur objectif est objectif
             self.caisses[(row, column)].grid_forget()
             caisse_sur_objectif = tk.PhotoImage(file=Image.caisse_sur_objectif)
             w = tk.Label(self.frame, image=caisse_sur_objectif)
@@ -318,19 +308,19 @@ class Application(tk.Frame):
             return True
         return False
 
-    def bloque(self, location, next_location):
+    def bloque(self, location, next_location): #Bloquage caisse
         row, column = location
         next_row, next_column = next_location
 
-        if self.niveau[row][column] is Niveau.caisse and self.niveau[next_row][next_column] is Niveau.mur:
+        if self.niveau[row][column] is Niveau.caisse and self.niveau[next_row][next_column] is Niveau.mur: #Si block suivant caisse est mur
             return True
-        elif self.niveau[row][column] is Niveau.caisse_sur_objectif and self.niveau[next_row][next_column] is Niveau.mur:
+        elif self.niveau[row][column] is Niveau.caisse_sur_objectif and self.niveau[next_row][next_column] is Niveau.mur: #Si block suivant caisse sur objectif est mur
             return True
-        elif (self.niveau[row][column] is Niveau.caisse_sur_objectif and
+        elif (self.niveau[row][column] is Niveau.caisse_sur_objectif and #Si block suivant caisse sur objectof est caisse ou caisse sur objectif
                   (self.niveau[next_row][next_column] is Niveau.caisse or
                            self.niveau[next_row][next_column] is Niveau.caisse_sur_objectif)):
             return True
-        elif (self.niveau[row][column] is Niveau.caisse and
+        elif (self.niveau[row][column] is Niveau.caisse and#Si block suivant caisse est caisse ou caisse sur objectif
                   (self.niveau[next_row][next_column] is Niveau.caisse or
                            self.niveau[next_row][next_column] is Niveau.caisse_sur_objectif)):
             return True
