@@ -1,4 +1,4 @@
-''' Créer par Lucas Nadal et Yann Floris pour un projet de fin d'année en ISN, année 2016 '''
+''' Créé par Lucas Nadal et Yann Floris pour un projet de fin d'année en ISN, année 2016 '''
 
 import tkinter as tk
 from tkinter.filedialog import askopenfilenames
